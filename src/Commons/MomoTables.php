@@ -32,7 +32,6 @@ namespace LaMomo\MomoApp\Commons;
 *(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 *OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-use Illuminate\Database\Schema\Blueprint;
 class MomoTables 
 {
 	
@@ -45,20 +44,5 @@ class MomoTables
 	const API_COLLECTION="momo_collections";
 	const API_DISBURSEMENTS="momo_disbursements";
 	const API_REMITTANCES="momo_remittances";
-	// const API_USER="";
-	public static function productsTable(Blueprint $table){
-		$table->bigIncrements('id');
-        $table->timestamps();
-        // return $table;
-	}
-	public static function apiUserTable(Blueprint $table){
-		$table->bigIncrements('id');
-        $table->timestamps();
-        // return $table;
-	}
-	public static function accessTokenTable(Blueprint $table){
-		$table->bigIncrements('id');
-        $table->timestamps();
-        // return $table;
-	}
+	
 }

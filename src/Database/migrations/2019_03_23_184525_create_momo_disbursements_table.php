@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use LaMomo\MomoApp\Commons\MomoTables;
+use LaMomo\MomoApp\Util\DbUtils;
 
 class CreateMomoDisbursementsTable extends Migration
 {
@@ -15,7 +16,7 @@ class CreateMomoDisbursementsTable extends Migration
     public function up()
     {
         Schema::create(MomoTables::API_DISBURSEMENTS, function (Blueprint $table) {
-            MomoTables::productsTable($table);
+            DbUtils::productsTable($table);
         });
     }
 

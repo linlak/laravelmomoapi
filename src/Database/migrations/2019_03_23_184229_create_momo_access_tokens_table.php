@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use LaMomo\MomoApp\Commons\MomoTables;
+use LaMomo\MomoApp\Util\DbUtils;
 
 class CreateMomoAccessTokensTable extends Migration
 {
@@ -16,7 +17,7 @@ class CreateMomoAccessTokensTable extends Migration
     public function up()
     {
         Schema::create(MomoTables::API_TOKENS, function (Blueprint $table) {
-           MomoTables::accessTokenTable($table);
+           DbUtils::accessTokenTable($table);
         });
     }
 
