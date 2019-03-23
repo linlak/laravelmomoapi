@@ -1,0 +1,23 @@
+{
+	"name":"linlak/laravelmomoapi",
+	"description":"",
+	"type":"library",
+	"keywords":[
+		"momo api",
+		"laravel mtn momo",
+		"mtn uganda api",
+		"integration"
+	],
+	"autoload":{
+		"psr-4":{
+			"LaMomo\\MomoApi\\":"src/"
+		}
+	},
+	"extra":{
+		"laravel":{
+			"providers":[
+				"LaMomo\\MomoApi\\MomoApiServiceProvider"
+			]
+		}
+	}
+}
