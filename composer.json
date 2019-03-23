@@ -2,22 +2,43 @@
 	"name":"linlak/laravelmomoapi",
 	"description":"",
 	"type":"library",
+	"license": "MIT",
 	"keywords":[
 		"momo api",
 		"laravel mtn momo",
 		"mtn uganda api",
 		"integration"
-	],
+	], 
+	"authors": [
+        {
+            "name": "Linus Nowomukama",
+            "email": "lnowomukama.linlak.linus2@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "illuminate/http": "5.8.*",
+        "illuminate/routing": "5.8.*",
+        "illuminate/session": "5.8.*",
+        "illuminate/support": "5.8.*",
+        "illuminate/view": "5.8.*"
+    },
 	"autoload":{
 		"psr-4":{
 			"LaMomo\\MomoApi\\":"src/"
 		}
 	},
 	"extra":{
+		"branch-alias": {
+            "dev-master": "1.0-dev"
+        },
 		"laravel":{
 			"providers":[
 				"LaMomo\\MomoApi\\MomoApiServiceProvider"
-			]
+			],
+            "aliases":{}
 		}
-	}
+	},
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
