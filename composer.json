@@ -25,7 +25,7 @@
     },
 	"autoload":{
 		"psr-4":{
-			"LaMomo\\MomoApi\\":"src/"
+			"LaMomo\\MomoApp\\":"src/"
 		}
 	},
 	"extra":{
@@ -34,7 +34,7 @@
         },
 		"laravel":{
 			"providers":[
-				"LaMomo\\MomoApi\\MomoApiServiceProvider"
+				"LaMomo\\MomoApp\\MomoApiServiceProvider"
 			],
             "aliases":{}
 		}
