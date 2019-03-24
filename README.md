@@ -69,14 +69,24 @@ You should define variables as in the example below.
 	LAMOMO_API_COLLECTION_S_KEY=5hgj7974d9bc342c88060ab9c30954358
 	
 Don't wrap variables in quotes.
+Variables with
+
+.....P_KEY  denote primary keys
+
+....S_KEY denote secondary keys
+
+Never exchange primary keys for secondary keys else you will never get the desired results.
 
 Let's perform migrations
 
 	php artisan migrate -v
 	
-We are now done setting up the necessary configurations now when you  run the migrate command the tables require for this library to  run well will be created.
+We are now done setting up the necessary configurations now when you  run the migrate command the tables required for this library to  run well will be created.
 
 ## Examples ##
+
+The following code snippets will walk through the process of working this php laravel library but conventions may differ according to your coding 
+practices.
 
 
 
