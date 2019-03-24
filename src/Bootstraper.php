@@ -116,13 +116,16 @@ class Bootstraper
 
 					$momo->setApiKey($apiUser->api_key);
 
-					if ($apiUser->access_token===null||(string)$apiUser->AccessToken->access_token==="") {
-						// return $apiUser->AccessToken;
+					if ($apiUser->access_token===null&&(string)$apiUser->AccessToken->access_token==="") {
+						
 						$tk=new AccessToken();
 						$tk->uuid=$apiUser->uuid;
 						$tk->access_token="itghffgffgkhdfghjlkjhjh";
 						$tk->token_type='access_token';
-						$tk->expires_in=0;
+						$tk->expires_in=3600;
+						// $tk->created_at=3600;
+						// $expires_at="DATE_ADD(NOW(), INTERVAL ".$tk->expires_in." SECOND)";
+						// echo($expires_at);
 						(new AccessToken())->updateOrCreate(['uuid'=>$tk->uuid],$tk->toArray());
 						$apiUser->refresh();
 

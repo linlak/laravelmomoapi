@@ -52,6 +52,7 @@ class DbUtils
 		$table->longText('access_token')->nullable();
 		$table->string('token_type',20);
 		$table->integer('expires_in')->default(0);
+        $table->timestamp('expires_at')->nullable();
         $table->timestamps();
         $table->primary('uuid');
         $table->foreign('uuid')
