@@ -6,7 +6,7 @@ use LaMomo\MomoApp\Products\Disbursements;
 use LaMomo\MomoApp\Products\Remittances;
 
 //modls
-use LaMomo\MomoApp\Models\AcceccToken;
+use LaMomo\MomoApp\Models\AccessToken;
 use LaMomo\MomoApp\Models\ApiUser;
 
 use LaMomo\MomoApp\Models\Collection;
@@ -50,42 +50,17 @@ class Bootstraper
 	}
 	
 	public function initCollections(){
-		/*
-				Array
-		(
-		    [uuid] => 19fa08cc-4e08-11e9-8947-00ffd1d0ef7b
-		    [api_primary] => gyfcfghbhnj
-		    [api_secondary] => fghjljltrsdb
-		    [product] => Collection
-		    [api_key] => fghjolkjhfghj
-		    [callback_url] => momo.autobitzltd.com
-		    [created_at] => 
-		    [updated_at] => 
-		    [access_token] => 
-		)
-				*/
+		
 		if ($this->isCollection) {
 			$momo=new Collections($this->cPriKey,$this->cSecKey,$this->environ);			
 			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
 			{
-				$momo->setApiUserId($apiUser['uuid']);
-				if (""!==(string)$apiUser['api_key']) {
-					$momo->setApiKey($apiUser['api_key']);
-					/*if ($apiUser['access_token']===null) {
-						# code...
-						//
-					}*/
-					return $apiUser['access_token'];
-				}else{
-					if ($apiUser=$this->getApikey($momo,$apiUser)) {
-						$momo->setApiKey($apiUser['api_key']);							
-					}
-				}
-				return $momo;
+				$this->setMomo($momo,$apiUser);	
+				return $apiUser;			
+				// return $momo;
 			}else{
 				if ($apiUser=$this->insertNewApiUser($momo,$this->cPriKey,$this->cSecKey,'Collection')) {
-					$momo->setApiUserId($apiUser['uuid']);
-					$momo->setApiKey($apiUser['api_key']);
+					$this->setMomo($momo,$apiUser);
 				}
 			}
 			return $momo;
@@ -94,6 +69,71 @@ class Bootstraper
 			//throw error
 		}
 		return false;
+	}
+	public function initDisbursements(){
+		if ($this->isDisbursements) {
+			$momo=new Disbursements($this->dPriKey,$this->dSecKey,$this->environ);
+			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
+			{
+				$this->setMomo($momo,$apiUser);	
+				return $apiUser;			
+				// return $momo;
+			}else{
+				if ($apiUser=$this->insertNewApiUser($momo,$this->cPriKey,$this->cSecKey,'Disbursement')) {
+					$this->setMomo($momo,$apiUser);
+				}
+			}
+			return $momo;
+		}
+		else{
+			//throw error
+		}
+	}
+	public function initRemittances(){
+		if ($this->isRemittances) {
+			$momo=new Remittances($this->rPriKey,$this->rSecKey,$this->environ);
+			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
+			{
+				$this->setMomo($momo,$apiUser);	
+				return $apiUser;			
+				// return $momo;
+			}else{
+				if ($apiUser=$this->insertNewApiUser($momo,$this->cPriKey,$this->cSecKey,'Remittance')) {
+					$this->setMomo($momo,$apiUser);
+				}
+			}
+			return $momo;
+		}
+		else{
+			//throw error
+		}
+	}
+	private function setMomo(MomoApp $momo,ApiUser $apiUser){
+
+				$momo->setApiUserId($apiUser->uuid);
+
+				if (""!==(string)$apiUser->api_key) {
+
+					$momo->setApiKey($apiUser->api_key);
+
+					if ($apiUser->access_token===null||(string)$apiUser->AccessToken->access_token==="") {
+						// return $apiUser->AccessToken;
+						$tk=new AccessToken();
+						$tk->uuid=$apiUser->uuid;
+						$tk->access_token="itghffgffgkhdfghjlkjhjh";
+						$tk->token_type='access_token';
+						$tk->expires_in=0;
+						(new AccessToken())->updateOrCreate(['uuid'=>$tk->uuid],$tk->toArray());
+						$apiUser->refresh();
+
+					}else{
+						$momo->setApiToken($apiUser->accessToken->access_token);
+					}					
+
+				}else{
+					$this->getApikey($momo,$apiUser);
+					$momo->setApiKey($apiUser->api_key);
+				}
 	}
 	private function insertNewApiUser(MomoApp $momo,$api_primary,$api_secondary,$product,$callBack=null,$liveCong=array()){	
 		$newUser=new ApiUser();
@@ -122,16 +162,15 @@ class Bootstraper
 					if($newUser->save()){
 						if($apiUser=$this->checkApiUser($api_primary,$api_secondary))
 							{
-								$momo->setApiUserId($apiUser['uuid']);
-								if (""!==(string)$apiUser['api_key']) {
-									$momo->setApiKey($apiUser['api_key']);
+								$momo->setApiUserId($apiUser->uuid);
+								if (""!==(string)$apiUser->api_key) {
+									$momo->setApiKey($apiUser->api_key);
 								}else{
-										if ($apiUser=$this->getApikey($momo,$apiUser)) {
-											$momo->setApiKey($apiUser['api_key']);
-										}
+								$this->getApikey($momo,$apiUser);
+								$momo->setApiKey($apiUser->api_key);						
 								}
-								return $apiUser;
 							}
+							return $apiUser;
 					}
 				}
 			}
@@ -143,40 +182,20 @@ class Bootstraper
 	private function getApiKey(MomoApp $momo,$apiUser){
 		if ($res=$momo->getApikey()) {
 			if ($res->isUser()) {
-				$newUser=ApiUser::where('uuid','=',$apiUser['uuid'])->get()->first();
-				// $newUser->uuid=$apiUser['uuid'];
-				$newUser->api_key=$res->getApiKey();
-				if($newUser->save()){
-					return $this->checkApiUser($apiUser['api_primary'],$apiUser['api_secondary']);
+				$apiUser->api_key=$res->getApiKey();
+				if($apiUser->save()){
+					$apiUser->refresh();
 				}
 			}
 		}
-		return false;
 	}
 	public function checkApiUser($api_primary,$api_secondary){
 
 		if($apiUser=ApiUser::with('accessToken')->where('api_primary','=',$api_primary)->where('api_secondary','=',$api_secondary)->get()->first())
 			{
-				return $apiUser->toArray();
+				return $apiUser;
 			}
 		return false;
 	}
-	public function initDisbursements(){
-		if ($this->isDisbursements) {
-			$momo=new Disbursements($this->dPriKey,$this->dSecKey,$this->environ);
-			return $momo;
-		}
-		else{
-			//throw error
-		}
-	}
-	public function initRemittances(){
-		if ($this->isRemittances) {
-			$momo=new Remittances($this->rPriKey,$this->rSecKey,$this->environ);
-			return $momo;
-		}
-		else{
-			//throw error
-		}
-	}
+	
 }

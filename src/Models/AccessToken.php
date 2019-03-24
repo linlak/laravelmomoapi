@@ -8,6 +8,7 @@ class AccessToken extends Model
 	protected $table=MomoTables::API_TOKENS;
 	protected $primaryKey="uuid";
 	protected $keyType = 'string';
+	protected $fillable=['uuid','access_token','token_type','expires_in','created_at'];
 	public $incrementing =false;
 	public function apiUser()
 	{
