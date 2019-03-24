@@ -5,6 +5,7 @@ use LaMomo\MomoApp\Products\Collections;
 use LaMomo\MomoApp\Products\Disbursements;
 use LaMomo\MomoApp\Products\Remittances;
 
+use LaMomo\MomoApp\Responses\TokenResponse;
 //modls
 use LaMomo\MomoApp\Models\AccessToken;
 use LaMomo\MomoApp\Models\ApiUser;
@@ -56,8 +57,8 @@ class Bootstraper
 			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
 			{
 				$this->setMomo($momo,$apiUser);	
-				return $apiUser;			
-				// return $momo;
+				// return $apiUser;			
+				return $momo;
 			}else{
 				if ($apiUser=$this->insertNewApiUser($momo,$this->cPriKey,$this->cSecKey,'Collection')) {
 					$this->setMomo($momo,$apiUser);
@@ -116,22 +117,13 @@ class Bootstraper
 
 					$momo->setApiKey($apiUser->api_key);
 
-					if ($apiUser->access_token===null&&(string)$apiUser->AccessToken->access_token==="") {
-						
-						$tk=new AccessToken();
-						$tk->uuid=$apiUser->uuid;
-						$tk->access_token="itghffgffgkhdfghjlkjhjh";
-						$tk->token_type='access_token';
-						$tk->expires_in=3600;
-						// $tk->created_at=3600;
-						// $expires_at="DATE_ADD(NOW(), INTERVAL ".$tk->expires_in." SECOND)";
-						// echo($expires_at);
-						(new AccessToken())->updateOrCreate(['uuid'=>$tk->uuid],$tk->toArray());
-						$apiUser->refresh();
+					if ( ($apiUser->accessToken===null) || ($apiUser->AccessToken!==null && (string)$apiUser->AccessToken->access_token==="")) {
+						if ($result=$momo->requestToken()) {
+							$this->saveApiToken($result,$apiUser);
+						}						
 
-					}else{
-						$momo->setApiToken($apiUser->accessToken->access_token);
-					}					
+					}
+					$momo->setApiToken($apiUser->accessToken->access_token);				
 
 				}else{
 					$this->getApikey($momo,$apiUser);
@@ -200,5 +192,18 @@ class Bootstraper
 			}
 		return false;
 	}
+	public function saveApiToken(TokenResponse $response,ApiUser $apiUser){
+		if ($response->isCreated()) {
+				$tk=new AccessToken();
+						$tk->uuid=$apiUser->uuid;
+						$tk->access_token=$response->getAccessToken();
+						$tk->token_type=$response->getTokenType();
+						$tk->expires_in=$response->getExpiresIn();
+						// $tk->created_at=
+						// $expires_at=
+						(new AccessToken())->updateOrCreate(['uuid'=>$tk->uuid],$tk->toArray());
+						$apiUser->refresh();				
+			}
+		}
 	
 }
