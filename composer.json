@@ -36,7 +36,9 @@
 			"providers":[
 				"LaMomo\\MomoApp\\MomoApiServiceProvider"
 			],
-            "aliases":{}
+            "aliases":{
+            	"Momo":"LaMomo\\MomoApp\\Facades\\LaMomo"
+            }
 		}
 	},
     "minimum-stability": "dev",
