@@ -61,7 +61,7 @@ We are almost there, but we need to set-up our environment variables. Open the .
 If you notice how the variable are set it is self explanatory. If you alter the definitions you will not get the desired results. 
 Fill in the the api keys for the respective apis and the api environment. 
 
-**Note: ** Before you initialize any product, make sure you have entered the required apiKeys.
+**Note:**  Before you initialize any product, make sure you have entered the required apiKeys.
 
 You should define variables as in the example below.
 
