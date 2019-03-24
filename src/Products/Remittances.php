@@ -7,8 +7,8 @@ use LaMomo\MomoApp\MomoApp;
 class Remittances extends MomoApp
 {
 	
-	function __construct(argument)
+	function __construct($apiPrimaryKey,$apiSecondary,$environ='sandbox')
 	{
-		# code...
+		parent::__construct($apiPrimaryKey,$apiSecondary,$environ);
 	}
 }

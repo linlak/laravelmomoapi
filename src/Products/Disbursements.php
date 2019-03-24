@@ -7,8 +7,8 @@ use LaMomo\MomoApp\MomoApp;
 class Disbursements extends MomoApp
 {
 	
-	function __construct()
+	function __construct($apiPrimaryKey,$apiSecondary,$environ='sandbox')
 	{
-		# code...
+		parent::__construct($apiPrimaryKey,$apiSecondary,$environ);
 	}
 }

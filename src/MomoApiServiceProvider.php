@@ -14,7 +14,7 @@ class MomoApiServiceProvider extends ServiceProvider
 	{
 		# code...
 		$this->loadLinMigrations();
-		$this->app->alias('momo', BootStrapper::class);
+		$this->app->alias('momo', Bootstraper::class);
 		$this->registerBootstraper();
 	}
 	protected function loadLinMigrations(){
@@ -22,12 +22,12 @@ class MomoApiServiceProvider extends ServiceProvider
 	}
 	protected function registerBootstraper(){
 		$this->app->singleton('momo',function($app){
-			return new BootStrapper();
+			return new Bootstraper();
 		});
 	}
 	 public function provides()
 	
     {
-        return ['momo', BootStrapper::class];
+        return ['momo', Bootstraper::class];
     }
 }
