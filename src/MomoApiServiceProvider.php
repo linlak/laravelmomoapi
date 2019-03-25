@@ -9,11 +9,18 @@ class MomoApiServiceProvider extends ServiceProvider
 	public function boot()
 	{
 		
+		$this->loadLinMigrations();
+		
+	    $this->publishes([
+	        __DIR__.'/config/momo.php' => config_path('momo.php'),
+	    ]);
 	}
 	public function register()
 	{
 		# code...
-		$this->loadLinMigrations();
+		$this->mergeConfigFrom(
+	        __DIR__.'/config/momo.php', 'momo'
+	    );
 		$this->app->alias('momo', Bootstraper::class);
 		$this->registerBootstraper();
 	}
