@@ -44,36 +44,42 @@ Then in the same file look for **aliases**  add the following code
 		//........
 	]
 	
-We are almost there, but we need to set-up our environment variables. Open the .env file and the following line at the end.
+Run the follow command
 
-	LAMOMO_API_COLLECTION_P_KEY=
-	LAMOMO_API_COLLECTION_S_KEY=
+	$php artisan vendor:publish
+	
+This will display a list of options.  Enter number corresponding with
+
+	LaMomo\MomoApp\MomoApiServiceProvider
+We are almost there, but we need to set-up our environment variables. Open config->momo.php file replace momo with api keys.
 
 
-	LAMOMO_API_DISBURSEMENTS_P_KEY=
-	LAMOMO_API_DISBURSEMENTS_S_KEY=
-
-	LAMOMO_API_REMITTANCES_P_KEY=
-	LAMOMO_API_REMITTANCES_S_KEY=
-
-	LAMOMO_API_ENVIRONMENT=sandbox
-
-If you notice how the variable are set it is self explanatory. If you alter the definitions you will not get the desired results. 
+If you notice how the variable are set, it is self explanatory. If you alter the definitions you will not get the desired results. 
 Fill in the the api keys for the respective apis and the api environment. 
 
 **Note:**  Before you initialize any product, make sure you have entered the required apiKeys.
 
 You should define variables as in the example below.
 
-	LAMOMO_API_COLLECTION_P_KEY=3f67974d9bc342c880cdfgb9c30998539
-	LAMOMO_API_COLLECTION_S_KEY=5hgj7974d9bc342c88060ab9c30954358
+**From**
+	return [
+		"momo_api_collection_p_key"=>"momo",
+		"momo_api_collection_s_key"=>"momo"
+	];
+
+**To**
+
+	return [
+		"momo_api_collection_p_key"=>"3f67974d9bc342c880cdfgb9c30998539",
+		"momo_api_collection_s_key"=>"5hgj7974d9bc342c88060ab9c30954358"
+	];
 	
-Don't wrap variables in quotes.
+
 Variables with
 
-.....P_KEY  denote primary keys
+.....p_key  denote primary keys
 
-....S_KEY denote secondary keys
+....s_key denote secondary keys
 
 Never exchange primary keys for secondary keys else you will never get the desired results.
 
