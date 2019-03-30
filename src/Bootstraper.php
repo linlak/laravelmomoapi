@@ -127,9 +127,9 @@ class Bootstraper
 
 					$momo->setApiKey($apiUser->api_key);
 
-					var_dump(date($apiUser->accessToken->expires_at));
+					// var_dump(date($apiUser->accessToken->expires_at));
 
-					exit();
+					// exit();
 					if ( ($apiUser->accessToken===null) || ($apiUser->AccessToken!==null && (string)$apiUser->AccessToken->access_token==="")||((string)$apiUser->AccessToken->expires_at==="")||((string)$apiUser->AccessToken->expires_at!==""&&($apiUser->accessToken->expires_at->diffInSeconds($apiUser->accessToken->freshTimestamp()) <= $apiUser->accessToken->expires_in)) ) {
 
 						if ($result=$momo->requestToken()) {
