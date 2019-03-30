@@ -14,4 +14,5 @@ class AccessToken extends Model
 	{
 		return $this->belongsTo('LaMomo\MomoApp\Models\ApiUser','uuid','uuid');
 	}
+	
 }

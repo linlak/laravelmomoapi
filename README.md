@@ -2,6 +2,7 @@
 
 This is a simple but rich php library that has been designed to enable Laravel Developers to easily integrate the Momo api into their systems or projects.
 
+
 ## Before we get started ##
 
 We assume that You have composer installed on your computer and you have a laravel project or you have good knowlege working with Laravel.
@@ -78,9 +79,11 @@ You should define variables as in the example below.
 
 Variables with
 
-.....p_key  denote primary keys
 
-....s_key denote secondary keys
+
+> .....p_key  denote primary keys
+> 
+>  ....s_key denote secondary keys
 
 Never exchange primary keys for secondary keys else you will never get the desired results.
 
@@ -95,7 +98,141 @@ We are now done setting up the necessary configurations now when you  run the mi
 The following code snippets will walk through the process of working this php laravel library but conventions may differ according to your coding 
 practices.
 
+**Before we begin,**
 
+we assume you were successful in the installation steps provided above. 
+You should cross check to make sure you have all components installed.
+
+We also assume that you have good knowledge working with laravel and the command line.
+
+## Product Initialisation ##
+
+**Caution:** Never initialize all of your products in the same controller or file. This is because every time you initialize a product,
+the data being fetched adds a considerable time on the page load time. This library has been developed to ease your integration not to draw away your project users.
+
+To get started, let's create a sample controller and name it **CollectionsController**. In terminal or command prompt, enter the following artisan command.
+
+	$php artisan make:controller CollectionsController
+	
+Press enter/return button to execute the command
+
+You will find the generated file in
+
+
+	 app>Http>Controllers>CollectionsController.php
+
+When you open this file in your editor you will find the following code
+
+	<?php
+
+	namespace App\Http\Controllers;
+
+	use Illuminate\Http\Request;
+
+	class CollectionsController extends Controller
+	{
+   		 //
+	}
+
+Let's add a constructor and our callback to the controller 
+
+
+	<?php
+
+	namespace App\Http\Controllers;
+
+	use Illuminate\Http\Request;
+	use Momo;
+	
+	class CollectionsController extends Controller
+	{
+		protected $momoCollection;
+
+    		public function __construct()
+    		{
+    			$this->momoCollection=Momo::initCollections();
+    		}
+
+    		public function index()
+    		{
+    			//checks collection balance
+
+    			$balance=$this->momoCollection->requestBalance();
+
+    			//for presantation let's just display the balance
+
+    			echo "<pre>";
+
+    			var_dump($balance);
+    		}
+
+	}
+
+Now let's add a route to our project. Open
+
+	routes>web.php
+	
+Add
+
+	Route::get('/collections/balance', 'CollectionsController@index');
+	
+	
+Open the route you have created in your browser. 
+
+To our controller **CollectionsController**, lets add another method **paynow**
+
+I have assumed that the user has are selected the products in the cart and generated the invoice.
+Now by pressing the PayNow button  to make the payment, we shall also create a route in our web.php file that call the paynow callback.
+
+	Route::post('/collections/paynow','CollectionsController@paynow');
+	
+
+In CollectionsController.php  add
+
+
+	............
+	
+	use App\Invoice;
+	use LaMomo\MomoApp\Models\RequestToPay;
+	
+	............
+	
+	public function paynow(Request $request) {
+	
+    		$invoice=Invoice::find($request->input('id'));
+
+    		$requestToPay=new RequestToPay($invoice->id,$invoice->total,$invoice->payment->partyId,$invoice->payment->partyIdType,'Pay invoice no. '.$invoice->invoice_number,'Invoice payment');
+    		$response =$this->momoCollection->requestToPay($requestToPay,'{callback url}');
+
+    		if ($response->isAccepted()) {
+    			$invoice->refrenceId=$response->getReferenceId();
+    			$invoice->save();
+    			return redirect('/invoice')->with('status','Invoice submitted please approve your payment');
+    		}
+
+    		return redirect('/invoice')->with('warning','Error submitting invoice try again');
+
+    }
+    
+	..........
+
+Add invoice route to web.php
+
+	Route::get('/invoice/{id}','CollectionsController@invoice');
+	
+
+	
+**Nice time coding**
+
+Regards
+
+Linus Nowomukama
+
+[mailto:ugsalons@gmail.com](mailto:ugsalons@gmail.com "Send Email")
+
+[tel:+256783198167](tel:+256783198167 "Call me")
+
+[tel:+256751921465](tel:+256751921465 "Call or Watsapp")
 
 
 

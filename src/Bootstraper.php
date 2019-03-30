@@ -1,5 +1,8 @@
 <?php
 namespace LaMomo\MomoApp;
+use Illuminate\Support\Carbon;
+
+use LaMomo\MomoApp\Commons\MomoTables;
 
 use LaMomo\MomoApp\Products\Collections;
 use LaMomo\MomoApp\Products\Disbursements;
@@ -13,11 +16,13 @@ use LaMomo\MomoApp\Models\ApiUser;
 use LaMomo\MomoApp\Models\Collection;
 use LaMomo\MomoApp\Models\Disbursement;
 use LaMomo\MomoApp\Models\Remittance;
+use Illuminate\Support\Facades\Date;
 /**
 * 
 */
 class Bootstraper
 {
+	// use Carbon\Traits
 	private $cPriKey,$cSecKey,$dPriKey,$dSecKey,$rPriKey,$rSecKey;
 	private $environ;
 	private $isCollection=false;
@@ -32,13 +37,18 @@ class Bootstraper
 		$this->init();
 	}
 	private function init(){
-		$this->cPriKey=env('LAMOMO_API_COLLECTION_P_KEY',"");
-		$this->cSecKey=env('LAMOMO_API_COLLECTION_S_KEY',"");
-		$this->dPriKey=env('LAMOMO_API_DISBURSEMENTS_P_KEY',"");
-		$this->dSecKey=env('LAMOMO_API_DISBURSEMENTS_S_KEY',"");
-		$this->rPriKey=env('LAMOMO_API_REMITTANCES_P_KEY',"");
-		$this->rSecKey=env('LAMOMO_API_REMITTANCES_S_KEY',"");
-		$this->environ=env('LAMOMO_API_ENVIRONMENT',"sandbox");
+
+		$this->cPriKey=config('momo.momo_api_collection_p_key');
+		$this->cSecKey=config('momo.momo_api_collection_s_key');
+
+		$this->dPriKey=config('momo.momo_api_disbursement_p_key');
+		$this->dSecKey=config('momo.momo_api_disbursement_s_key');
+
+		$this->rPriKey=config('momo.momo_api_remittance_p_key');
+		$this->rSecKey=config('momo.momo_api_remittance_s_key');
+
+		$this->environ=config('momo.momo_api_environ');
+
 		if ($this->cPriKey!==""&&$this->cSecKey!=="") {
 			$this->isCollection=true;
 		}
@@ -117,16 +127,23 @@ class Bootstraper
 
 					$momo->setApiKey($apiUser->api_key);
 
-					if ( ($apiUser->accessToken===null) || ($apiUser->AccessToken!==null && (string)$apiUser->AccessToken->access_token==="")) {
+					var_dump(date($apiUser->accessToken->expires_at));
+
+					exit();
+					if ( ($apiUser->accessToken===null) || ($apiUser->AccessToken!==null && (string)$apiUser->AccessToken->access_token==="")||((string)$apiUser->AccessToken->expires_at==="")||((string)$apiUser->AccessToken->expires_at!==""&&($apiUser->accessToken->expires_at->diffInSeconds($apiUser->accessToken->freshTimestamp()) <= $apiUser->accessToken->expires_in)) ) {
+
 						if ($result=$momo->requestToken()) {
 							$this->saveApiToken($result,$apiUser);
 						}						
 
 					}
+
 					$momo->setApiToken($apiUser->accessToken->access_token);				
 
 				}else{
+
 					$this->getApikey($momo,$apiUser);
+
 					$momo->setApiKey($apiUser->api_key);
 				}
 	}
@@ -185,24 +202,26 @@ class Bootstraper
 		}
 	}
 	public function checkApiUser($api_primary,$api_secondary){
-
+		
 		if($apiUser=ApiUser::with('accessToken')->where('api_primary','=',$api_primary)->where('api_secondary','=',$api_secondary)->get()->first())
 			{
+			
 				return $apiUser;
 			}
-		return false;
+		 return false;
 	}
 	public function saveApiToken(TokenResponse $response,ApiUser $apiUser){
+		
 		if ($response->isCreated()) {
 				$tk=new AccessToken();
-						$tk->uuid=$apiUser->uuid;
-						$tk->access_token=$response->getAccessToken();
-						$tk->token_type=$response->getTokenType();
-						$tk->expires_in=$response->getExpiresIn();
-						// $tk->created_at=
-						// $expires_at=
-						(new AccessToken())->updateOrCreate(['uuid'=>$tk->uuid],$tk->toArray());
-						$apiUser->refresh();				
+				$tk->uuid=$apiUser->uuid;
+				$tk->access_token=$response->getAccessToken();
+				$tk->token_type=$response->getTokenType();
+				$tk->expires_in=$response->getExpiresIn();
+				$tk->created_at=$apiUser->accessToken->freshTimestamp()->add('second',$response->getExpiresIn());
+				$tk->forcefill(['expires_at'=>Carbon::now()->add('second',$response->getExpiresIn())]);
+				(new AccessToken())->updateOrCreate(['uuid'=>$tk->uuid],$tk->toArray());
+				$apiUser->refresh();				
 			}
 		}
 	

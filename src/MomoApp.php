@@ -13,25 +13,14 @@ use LaMomo\MomoApp\Interfaces\MomoInterface;
 
 use LaMomo\MomoApp\Responses\ApiUserResponse;
 use LaMomo\MomoApp\Responses\ApiKeyResponse;
-use LaMomo\MomoApp\Responses\apiUserInfoResponse;
-
+use LaMomo\MomoApp\Responses\ApiUserInfoResponse;
+use LaMomo\MomoApp\Traits\CreatesApiUser as ApiUserTrait;
+use Illuminate\Support\Str;
 
 class MomoApp 
 {
-	protected $environ="sandbox";//live
-	protected $apiPrimaryKey,$apiSecondary;
-	protected $apiKey='';
-	private $apiToken='';
-	protected $apiUserId='';
-	protected $headers=[
-		// "Content-Length"=>0,
-		Constants::H_AUTH=>"",
-		Constants::H_ENVIRON=>"",
-		// Constants::H_REF_ID=>"",
-		Constants::H_C_TYPE=>"",
-		Constants::H_OCP_APIM=>""
-	];
-	private $_client;
+	
+	use ApiUserTrait;
 	function __construct($apiPrimaryKey,$apiSecondary,$environ='sandbox')
 	{
 		$this->apiPrimaryKey=$apiPrimaryKey;
@@ -152,26 +141,6 @@ class MomoApp
 		}
 		unset($this->headers[$key]);
 	}
-	public function createApiUser($providerCallbackHost){
-		$uid=$this->gen_uuid();
-		$this->setHeaders(Constants::H_REF_ID,$uid);
-		$this->removeHeader(Constants::H_AUTH);
-		$this->removeHeader(Constants::H_ENVIRON);
-		$body=['providerCallbackHost'=>$providerCallbackHost];
-		$result=$this->send($this->genRequest("POST",MomoLinks::USER_URI,$body));
-		return new ApiUserResponse($result,$uid);
-	}
-	public function getApiUser(){
-		$this->removeHeader(Constants::H_AUTH);
-		$this->removeHeader(Constants::H_ENVIRON);
-		$result=$this->send($this->genRequest("GET",MomoLinks::USER_URI.'/'.$this->apiUserId));
-		return new ApiUserInfoResponse($result,$this->apiUserId);
-	}
-	public function getApikey(){
-		$this->removeHeader(Constants::H_AUTH);
-		$this->removeHeader(Constants::H_ENVIRON);
-		$result=$this->send($this->genRequest("POST",MomoLinks::USER_URI.'/'.$this->apiUserId.'/apikey'));
-		return new ApiKeyResponse($result,$this->apiUserId);
-	}
+	
 	public function apiUserHook(){}
 }
