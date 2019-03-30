@@ -28,10 +28,7 @@
 			"LaMomo\\MomoApp\\":"src/"
 		}
 	},
-	"extra":{
-		"branch-alias": {
-            "dev-master": "1.0-dev"
-        },
+	"extra":{		
 		"laravel":{
 			"providers":[
 				"LaMomo\\MomoApp\\MomoApiServiceProvider"
