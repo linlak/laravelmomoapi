@@ -17,6 +17,8 @@ use LaMomo\MomoApp\Models\Collection;
 use LaMomo\MomoApp\Models\Disbursement;
 use LaMomo\MomoApp\Models\Remittance;
 use Illuminate\Support\Facades\Date;
+
+use LaMomo\MomoApp\Responses\RequestToPayResponse;
 /**
 * 
 */
@@ -63,7 +65,8 @@ class Bootstraper
 	public function initCollections(){
 		
 		if ($this->isCollection) {
-			$momo=new Collections($this->cPriKey,$this->cSecKey,$this->environ);			
+			$momo=new Collections($this->cPriKey,$this->cSecKey,$this->environ);	
+			$momo->setDb($this);		
 			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
 			{
 				$this->setMomo($momo,$apiUser);	
@@ -84,6 +87,7 @@ class Bootstraper
 	public function initDisbursements(){
 		if ($this->isDisbursements) {
 			$momo=new Disbursements($this->dPriKey,$this->dSecKey,$this->environ);
+			$momo->setDb($this);	
 			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
 			{
 				$this->setMomo($momo,$apiUser);	
@@ -103,6 +107,7 @@ class Bootstraper
 	public function initRemittances(){
 		if ($this->isRemittances) {
 			$momo=new Remittances($this->rPriKey,$this->rSecKey,$this->environ);
+			$momo->setDb($this);	
 			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
 			{
 				$this->setMomo($momo,$apiUser);	
@@ -127,10 +132,15 @@ class Bootstraper
 
 					$momo->setApiKey($apiUser->api_key);
 
-					// var_dump(date($apiUser->accessToken->expires_at));
+					// var_dump(new Carbon($apiUser->accessToken->expires_at));
+					// var_dump((new Carbon($apiUser->accessToken->expires_at))->diffInSeconds($apiUser->accessToken->freshTimestamp()));
 
 					// exit();
-					if ( ($apiUser->accessToken===null) || ($apiUser->AccessToken!==null && (string)$apiUser->AccessToken->access_token==="")||((string)$apiUser->AccessToken->expires_at==="")||((string)$apiUser->AccessToken->expires_at!==""&&($apiUser->accessToken->expires_at->diffInSeconds($apiUser->accessToken->freshTimestamp()) <= $apiUser->accessToken->expires_in)) ) {
+					if ( 
+						($apiUser->accessToken===null) ||
+						 ($apiUser->AccessToken!==null && (string)$apiUser->AccessToken->access_token==="" ) ||
+						 ((string)$apiUser->AccessToken->expires_at==="")||
+						 ((string)$apiUser->AccessToken->expires_at!==""&&(new Carbon($apiUser->accessToken->expires_at))->diffInSeconds($apiUser->accessToken->freshTimestamp())<=500)	) {
 
 						if ($result=$momo->requestToken()) {
 							$this->saveApiToken($result,$apiUser);
@@ -218,11 +228,76 @@ class Bootstraper
 				$tk->access_token=$response->getAccessToken();
 				$tk->token_type=$response->getTokenType();
 				$tk->expires_in=$response->getExpiresIn();
-				$tk->created_at=$apiUser->accessToken->freshTimestamp()->add('second',$response->getExpiresIn());
-				$tk->forcefill(['expires_at'=>Carbon::now()->add('second',$response->getExpiresIn())]);
+				$tk->created_at=Carbon::now();
+				$tk->forcefill(['expires_at'=>Carbon::now()->addSeconds($response->getExpiresIn())]);
 				(new AccessToken())->updateOrCreate(['uuid'=>$tk->uuid],$tk->toArray());
 				$apiUser->refresh();				
 			}
 		}
-	
+	public function saveRequestToPay(RequestToPayResponse $result,$api_primary,$api_secondary)
+	{
+		if($apiUser=$this->checkApiUser($api_primary,$api_secondary)){
+			$pytToDb=$newPyt=false;
+			switch ($apiUser->product) {
+				case 'Collection':
+					$pytToDb=new Collection;
+					break;
+				case 'Disbursement':
+					$pytToDb=new Disbursement;
+					break;
+				case 'Remittance':
+					$pytToDb=new Remittance;
+					break;
+				
+			}
+			$pytToDb->referenceId=$result->getReferenceId();
+			$pytToDb->uuid=$apiUser->uuid;
+			$pytToDb->amount=$result->getRequestBody()->getAmount();
+			$pytToDb->partyIdType=$result->getRequestBody()->getPartyIdType();
+			$pytToDb->partyId=$result->getRequestBody()->getPartId();
+			$pytToDb->currency=$result->getRequestBody()->getCurrency();
+			$pytToDb->externalId=$result->getRequestBody()->getExternalId();
+			$pytToDb->payerMessage=$result->getRequestBody()->getPayerMessage();
+			$pytToDb->payeeNote=$result->getRequestBody()->getPayeeNote();
+			// $pytToDb->=$result->getRequestBody()->;
+			// $pytToDb->=$result->getRequestBody()->;
+			$pytToDb->save();
+
+			switch ($apiUser->product) {
+				case 'Collection':
+					$newPyt=Collection::find($result->getReferenceId());
+					break;
+				case 'Disbursement':
+					$newPyt=Disbursement::find($result->getReferenceId());
+					break;
+				case 'Remittance':
+					$newPyt=Remittance::find($result->getReferenceId());
+					break;
+				
+			}
+			return $newPyt;
+		}
+		
+	}
+	public function getPayment($referenceId,$api_primary,$api_secondary)
+	{
+		$newPyt=false;
+		if ($apiUser=$this->checkApiUser($api_primary,$api_secondary)) {
+
+			switch ($apiUser->product) {
+				case 'Collection':
+					$newPyt=Collection::find($referenceId);
+					break;
+				case 'Disbursement':
+					$newPyt=Disbursement::find($referenceId);
+					break;
+				case 'Remittance':
+					$newPyt=Remittance::find($referenceId);
+					break;
+				
+			}
+			
+		}
+		return $newPyt;
+	}
 }

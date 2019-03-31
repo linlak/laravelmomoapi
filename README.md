@@ -221,6 +221,16 @@ Add invoice route to web.php
 	Route::get('/invoice/{id}','CollectionsController@invoice');
 	
 
+Let's add the invoice callback to our controller
+
+	.........................
+	
+	
+	
+	
+	......................
+
+
 	
 **Nice time coding**
 

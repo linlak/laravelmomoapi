@@ -19,7 +19,7 @@ use Illuminate\Support\Str;
 
 class MomoApp 
 {
-	
+	protected $db=null;
 	use ApiUserTrait;
 	function __construct($apiPrimaryKey,$apiSecondary,$environ='sandbox')
 	{
@@ -72,6 +72,9 @@ class MomoApp
 	}
 	public function setApiToken($apiToken){
 		$this->apiToken=$apiToken;
+	}
+	public function setDb(Bootstraper $db){
+		$this->db=$db;
 	}
 	public function passResponse(ResponseInterface $response){
 		

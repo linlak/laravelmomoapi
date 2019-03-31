@@ -37,6 +37,7 @@ namespace LaMomo\MomoApp\Responses;
     [status_phrase] => Accepted
     [data] => 
 */
+    use LaMomo\MomoApp\Models\RequestToPay;
 class RequestToPayResponse extends MomoResponse
 {
 	private $is_accepted=false;//202 

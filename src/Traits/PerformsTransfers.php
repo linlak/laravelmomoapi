@@ -24,11 +24,14 @@ trait PerformsTransfers{
 		if ($this->environ==='sandbox') {
 			$requestBody->setCurrency('EUR');
 		}
+		
 		$response= $this->send($this->genRequest("POST",$this->transfer_uri,$requestBody->generateRequestBody()));
 
 		$result=new RequestToPayResponse($response,$referenceId,$requestBody);
 
 		if ($result->isAccepted()) {
+				
+
 			return $this->db->saveRequestToPay($result,$this->apiPrimaryKey,$this->apiSecondary);
 		}
 		return false;
@@ -36,7 +39,10 @@ trait PerformsTransfers{
 	public function requestToPayStatus($referenceId){
 
 		if($payt=$this->db->getPayment($referenceId,$this->apiPrimaryKey,$this->apiSecondary)){
-			if ($payt['status']==="PENDING") {
+			echo "<pre>";
+			var_dump($payt);
+			exit();
+			if ($payt->status!=="PENDING") {
 				$this->setAuth();
 				$response= $this->send($this->genRequest("GET",$this->transfer_uri.'/'.$referenceId));
 				$result=new RequestStatus($response,$referenceId);
