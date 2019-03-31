@@ -39,16 +39,13 @@ trait PerformsTransfers{
 	public function requestToPayStatus($referenceId){
 
 		if($payt=$this->db->getPayment($referenceId,$this->apiPrimaryKey,$this->apiSecondary)){
-			echo "<pre>";
-			var_dump($payt);
-			exit();
-			if ($payt->status!=="PENDING") {
+			
+			if ($payt->status==="PENDING") {
 				$this->setAuth();
-				$response= $this->send($this->genRequest("GET",$this->transfer_uri.'/'.$referenceId));
+				$response= $this->send($this->genRequest("GET",$this->transfer_uri.'/'.$referenceId));				
+
 				$result=new RequestStatus($response,$referenceId);
-				if ($this->db->updateRequestToPay($result,$this->apiPrimaryKey,$this->apiSecondary)) {
-					$payt=$this->db->getPayment($referenceId,$this->apiPrimaryKey,$this->apiSecondary);
-				}
+				$this->db->updateRequestToPay($result,$payt);
 			}	
 			return $payt;		
 		}

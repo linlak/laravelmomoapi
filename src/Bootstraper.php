@@ -7,6 +7,7 @@ use LaMomo\MomoApp\Commons\MomoTables;
 use LaMomo\MomoApp\Products\Collections;
 use LaMomo\MomoApp\Products\Disbursements;
 use LaMomo\MomoApp\Products\Remittances;
+use LaMomo\MomoApp\Products\MomoProduct;
 
 use LaMomo\MomoApp\Responses\TokenResponse;
 //modls
@@ -19,6 +20,7 @@ use LaMomo\MomoApp\Models\Remittance;
 use Illuminate\Support\Facades\Date;
 
 use LaMomo\MomoApp\Responses\RequestToPayResponse;
+use LaMomo\MomoApp\Responses\RequestStatus;
 /**
 * 
 */
@@ -299,5 +301,15 @@ class Bootstraper
 			
 		}
 		return $newPyt;
+	}
+
+	public function updateRequestToPay(RequestStatus $result,$pyt)
+	{
+		if ($result->resourceExists()) {
+			$pyt->forcefill(['financialTranactionId'=>$result->getFinancialTransId(),'reason'=>$result->getReason()]);
+			$pyt->status=$result->getStatus();
+			$pyt->save();
+			$pyt->refresh();
+		}
 	}
 }
