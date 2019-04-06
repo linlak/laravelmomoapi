@@ -195,7 +195,7 @@ In CollectionsController.php  add
 	use App\Invoice;
 	use LaMomo\MomoApp\Models\RequestToPay;
 	
-	............
+	//............
 	
 	public function paynow(Request $request) {
 	
@@ -214,7 +214,7 @@ In CollectionsController.php  add
 
     }
     
-	..........
+	//..........
 
 Add invoice route to web.php
 
@@ -223,9 +223,9 @@ Add invoice route to web.php
 
 Let's add the invoice callback to our controller
 
-	.........................
+	//.........................
 		
-	......................
+	//......................
 
 
 	
