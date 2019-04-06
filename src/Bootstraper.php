@@ -26,7 +26,6 @@ use LaMomo\MomoApp\Responses\RequestStatus;
 */
 class Bootstraper
 {
-	// use Carbon\Traits
 	private $cPriKey,$cSecKey,$dPriKey,$dSecKey,$rPriKey,$rSecKey;
 	private $environ;
 	private $isCollection=false;
@@ -71,8 +70,7 @@ class Bootstraper
 			$momo->setDb($this);		
 			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
 			{
-				$this->setMomo($momo,$apiUser);	
-				// return $apiUser;			
+				$this->setMomo($momo,$apiUser);			
 				return $momo;
 			}else{
 				if ($apiUser=$this->insertNewApiUser($momo,$this->cPriKey,$this->cSecKey,'Collection')) {
@@ -93,8 +91,7 @@ class Bootstraper
 			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
 			{
 				$this->setMomo($momo,$apiUser);	
-				return $apiUser;			
-				// return $momo;
+				return $apiUser;	
 			}else{
 				if ($apiUser=$this->insertNewApiUser($momo,$this->cPriKey,$this->cSecKey,'Disbursement')) {
 					$this->setMomo($momo,$apiUser);
@@ -113,8 +110,8 @@ class Bootstraper
 			if($apiUser=$this->checkApiUser($this->cPriKey,$this->cSecKey))
 			{
 				$this->setMomo($momo,$apiUser);	
-				return $apiUser;			
-				// return $momo;
+				// return $apiUser;			
+				return $momo;
 			}else{
 				if ($apiUser=$this->insertNewApiUser($momo,$this->cPriKey,$this->cSecKey,'Remittance')) {
 					$this->setMomo($momo,$apiUser);
@@ -134,10 +131,6 @@ class Bootstraper
 
 					$momo->setApiKey($apiUser->api_key);
 
-					// var_dump(new Carbon($apiUser->accessToken->expires_at));
-					// var_dump((new Carbon($apiUser->accessToken->expires_at))->diffInSeconds($apiUser->accessToken->freshTimestamp()));
-
-					// exit();
 					if ( 
 						($apiUser->accessToken===null) ||
 						 ($apiUser->AccessToken!==null && (string)$apiUser->AccessToken->access_token==="" ) ||
@@ -261,8 +254,6 @@ class Bootstraper
 			$pytToDb->externalId=$result->getRequestBody()->getExternalId();
 			$pytToDb->payerMessage=$result->getRequestBody()->getPayerMessage();
 			$pytToDb->payeeNote=$result->getRequestBody()->getPayeeNote();
-			// $pytToDb->=$result->getRequestBody()->;
-			// $pytToDb->=$result->getRequestBody()->;
 			$pytToDb->save();
 
 			switch ($apiUser->product) {

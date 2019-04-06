@@ -25,7 +25,7 @@ For this library to run perfectly we assume that you have installed the followin
 
 		composer require linlak/laravelmomoapi
 
-Run the command about in project directory to down the dependency files.
+Run the command above in project directory to download the dependency files.
 
 ## Initialization ##
 
@@ -224,10 +224,7 @@ Add invoice route to web.php
 Let's add the invoice callback to our controller
 
 	.........................
-	
-	
-	
-	
+		
 	......................
 
 
