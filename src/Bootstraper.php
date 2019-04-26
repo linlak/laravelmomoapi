@@ -21,6 +21,14 @@ use Illuminate\Support\Facades\Date;
 
 use LaMomo\MomoApp\Responses\RequestToPayResponse;
 use LaMomo\MomoApp\Responses\RequestStatus;
+
+
+use LaMomo\MomoApp\WebHooks\CollectionsHooks;
+use LaMomo\MomoApp\WebHooks\DisbursementsHook;
+use LaMomo\MomoApp\WebHooks\RemittancesHook;
+
+use Illuminate\Support\Facades\Request;
+
 /**
 * 
 */
@@ -297,10 +305,39 @@ class Bootstraper
 	public function updateRequestToPay(RequestStatus $result,$pyt)
 	{
 		if ($result->resourceExists()) {
-			$pyt->forcefill(['financialTranactionId'=>$result->getFinancialTransId(),'reason'=>$result->getReason()]);
+			$pyt->forcefill(['financialTransactionId'=>$result->getFinancialTransId(),'reason'=>$result->getReason()]);
 			$pyt->status=$result->getStatus();
 			$pyt->save();
 			$pyt->refresh();
 		}
+	}
+
+	public function registerCollectionsHook(Request $request)
+	{
+		/*Sample
+Schema
+ {
+  "amount": 100,
+  "currency": "UGX",
+  "financialTransactionId": 23503452,
+  "externalId": 947354,
+  "payer": {
+    "partyIdType": "MSISDN",
+    "partyId": 4656473839
+  },
+  "status": "SUCCESSFUL"
+}*/
+		$momoHook=new CollectionsHooks($this->initCollections());
+		$callBackData=$request->only('amount','currency','status','payer','financialTransactionId','externalId','reason');
+	}
+	public function registerRemittancessHook(Request $request)
+	{
+		$momoHook=new RemittancesHook($this->initRemittances());
+		$callBackData=$request->only('amount','currency','status','payer','financialTransactionId','externalId','reason');
+	}
+	public function registerDisbursementsHook(Request $request)
+	{
+		$momoHook=new DisbursementsHook($this->initDisbursements());
+		$callBackData=$request->only('amount','currency','status','payer','financialTransactionId','externalId','reason');
 	}
 }

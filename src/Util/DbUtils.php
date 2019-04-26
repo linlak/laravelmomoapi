@@ -21,7 +21,7 @@ class DbUtils
 		$table->string('currency');
 		$table->string('externalId');
 		$table->string('payerMessage');
-		$table->string('financialTranactionId')->nullable();
+		$table->string('financialTransactionId')->nullable();
 		$table->string('payeeNote');
 		$table->string('status')->default('PENDING');
 		$table->string('reason')->nullable();

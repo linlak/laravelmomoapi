@@ -44,7 +44,7 @@ class RequestStatus extends MomoResponse
     private $payeeNote="";
     private $status="";
     private $reason=null;
-	private $financialTranactionId=null;
+	private $financialTransactionId=null;
     private $resource_exists=false;//200 
     private $referenceId="";
 	function __construct(array $response,$referenceId){
@@ -56,7 +56,7 @@ class RequestStatus extends MomoResponse
         if ($this->getCode()===200) {
             $this->resource_exists=true;
             $this->amount=$this->getData('amount');
-            $this->financialTranactionId=$this->getData('financialTranactionId');
+            $this->financialTranactionId=$this->getData('financialTransactionId');
             $this->reason=$this->getData('reason');
             $this->status=$this->getData('status');
             $this->payerMessage=$this->getData('payerMessage');
@@ -75,7 +75,7 @@ class RequestStatus extends MomoResponse
         return $this->reason;
     }
     public function getFinancialTransId(){
-        return $this->financialTranactionId;
+        return $this->financialTransactionId;
     }
     public function isSucess(){
         return $this->status==="SUCCESSFUL";
