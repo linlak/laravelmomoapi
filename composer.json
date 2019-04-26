@@ -1,13 +1,18 @@
 {
 	"name":"linlak/laravelmomoapi",
-	"description":"",
+	"description":"This is a simple php library that has bees designed to help laravel developers to easily integrate the mtn momo api into their laravel projects with great ease.",
 	"type":"library",
 	"license": "MIT",
 	"keywords":[
 		"momo api",
 		"laravel mtn momo",
 		"mtn uganda api",
-		"integration"
+		"integration",
+		"momo",
+		"api",
+		"mobile money",
+		"online payment",
+		"payment"
 	], 
 	"authors": [
         {
