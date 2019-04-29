@@ -41,7 +41,7 @@ class InitMomo extends Command
     {
         // line, info, comment, question, error,table
          $this->showWelcome();
-         $this->changeEnv(["MOMO_COLLECTIONS_P_KEY"=>"","MOMO_COLLECTIONS_S_KEY"=>""]);
+         // $this->changeEnv(["MOMO_COLLECTIONS_P_KEY"=>"","MOMO_COLLECTIONS_S_KEY"=>""]);
          
     }
 
