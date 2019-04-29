@@ -2,7 +2,7 @@
 namespace LaMomo\MomoApp;
 
 use Illuminate\Support\ServiceProvider;
-
+use LaMomo\MomoApp\Console\Commands\InitMomo;
 class MomoApiServiceProvider extends ServiceProvider
 {
 	
@@ -10,7 +10,7 @@ class MomoApiServiceProvider extends ServiceProvider
 	{
 		
 		$this->loadLinMigrations();
-		
+		$this->registerCommands();
 	    $this->publishes([
 	        __DIR__.'/config/momo.php' => config_path('momo.php'),
 	    ]);
@@ -36,5 +36,13 @@ class MomoApiServiceProvider extends ServiceProvider
 	
     {
         return ['momo', Bootstraper::class];
+    }
+
+    protected function registerCommands(){
+    	if ($this->app->runningInConsole()) {
+    		$this->commands([
+    				InitMomo::class,
+    		]);
+    	}
     }
 }
