@@ -2,6 +2,11 @@
 	"name":"linlak/laravelmomoapi",
 	"description":"This is a simple php library that has bees designed to help laravel developers to easily integrate the mtn momo api into their laravel projects with great ease.",
 	"type":"library",
+	 "homepage": "https://github.com/linlak/laravelmomoapi",
+    "support": {
+        "issues": "https://github.com/linlak/laravelmomoapi/issues",
+        "source": "https://github.com/linlak/laravelmomoapi"
+    },
 	"license": "MIT",
 	"keywords":[
 		"momo api",
@@ -17,7 +22,8 @@
 	"authors": [
         {
             "name": "Linus Nowomukama",
-            "email": "lnowomukama.linlak.linus2@gmail.com"
+            "email": "lnowomukama.linlak.linus2@gmail.com",
+             "role": "Developer"
         }
     ],
     "require": {
@@ -28,6 +34,10 @@
         "illuminate/session": "5.8.*",
         "illuminate/support": "5.8.*",
         "illuminate/view": "5.8.*"
+    },
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist"
     },
 	"autoload":{
 		"psr-4":{
