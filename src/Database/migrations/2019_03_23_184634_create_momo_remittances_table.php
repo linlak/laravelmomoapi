@@ -16,7 +16,7 @@ class CreateMomoRemittancesTable extends Migration
     public function up()
     {
         Schema::create(MomoTables::API_REMITTANCES, function (Blueprint $table) {
-            DbUtils::productsTable($table);
+            DbUtils::productsTable($table, 'remittable');
         });
     }
 

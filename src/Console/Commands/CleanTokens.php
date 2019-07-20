@@ -4,8 +4,9 @@ namespace LaMomo\MomoApp\Console\Commands;
 
 use Illuminate\Console\Command;
 use LaMomo\MomoApp\Traits\MomoConsole;
+use LaMomo\MomoApp\Models\AccessToken;
 
-class InitMomo extends Command
+class CleanTokens extends Command
 {
     use MomoConsole;
     /**
@@ -13,14 +14,14 @@ class InitMomo extends Command
      *
      * @var string
      */
-    protected $signature = 'momo:init';
+    protected $signature = 'momo:token-clean';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Initialises the momo api integration provided by linlak\\laravelmomoapi laravel package';
+    protected $description = 'Removes expired api tokens';
 
     /**
      * Create a new command instance.
@@ -38,7 +39,13 @@ class InitMomo extends Command
      * @return mixed
      */
     public function handle()
-    {}
-
-    
+    {
+        $tokens = AccessToken::where('updated_at', '<', now()->subHour());
+        if ($tokens->count()) {
+            foreach ($tokens as $token) {
+                $token->delete();
+            }
+        }
+        // echo (now()->subHour());
+    }
 }

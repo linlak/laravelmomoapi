@@ -1,48 +1,56 @@
 <?php
+
 namespace LaMomo\MomoApp;
 
 use Illuminate\Support\ServiceProvider;
 use LaMomo\MomoApp\Console\Commands\InitMomo;
+use LaMomo\MomoApp\Console\Commands\CleanTokens;
+
 class MomoApiServiceProvider extends ServiceProvider
 {
-	
+
 	public function boot()
 	{
-		
+
 		$this->loadLinMigrations();
 		$this->registerCommands();
-	    $this->publishes([
-	        __DIR__.'/config/momo.php' => config_path('momo.php'),
-	    ]);
+		$this->publishes([
+			__DIR__ . '/config/momo.php' => config_path('momo.php'),
+		]);
 	}
 	public function register()
 	{
 		# code...
 		$this->mergeConfigFrom(
-	        __DIR__.'/config/momo.php', 'momo'
-	    );
+			__DIR__ . '/config/momo.php',
+			'momo'
+		);
 		$this->app->alias('momo', Bootstraper::class);
 		$this->registerBootstraper();
 	}
-	protected function loadLinMigrations(){
-		$this->loadMigrationsFrom(__DIR__.'/Database/migrations');
+	protected function loadLinMigrations()
+	{
+		$this->loadMigrationsFrom(__DIR__ . '/Database/migrations');
 	}
-	protected function registerBootstraper(){
-		$this->app->singleton('momo',function($app){
+	protected function registerBootstraper()
+	{
+		$this->app->singleton('momo', function ($app) {
 			return new Bootstraper();
 		});
 	}
-	 public function provides()
-	
-    {
-        return ['momo', Bootstraper::class];
-    }
+	public function provides()
 
-    protected function registerCommands(){
-    	if ($this->app->runningInConsole()) {
-    		$this->commands([
-    				InitMomo::class,
-    		]);
-    	}
-    }
+	{
+		return ['momo', Bootstraper::class];
+	}
+
+	protected function registerCommands()
+	{
+		if ($this->app->runningInConsole()) {
+			$this->commands([
+				InitMomo::class,
+				CleanTokens::class
+			]);
+		}
+	}
 }

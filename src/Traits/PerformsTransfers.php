@@ -1,4 +1,5 @@
 <?php
+
 namespace LaMomo\MomoApp\Traits;
 
 use LaMomo\MomoApp\Commons\Constants;
@@ -9,49 +10,46 @@ use LaMomo\MomoApp\Responses\RequestToPayResponse;
 use LaMomo\MomoApp\Responses\RequestStatus;
 
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use LaMomo\MomoApp\Models\Collection;
 
-trait PerformsTransfers{
+trait PerformsTransfers
+{
 	// protected $transfer_uri="";
 	use ChecksBalance;
-	public function requestToPay(RequestToPay $requestBody,$callbackUri=false){
+	public function requestToPay(RequestToPay $requestBody, Model $morph, $callbackUri = false)
+	{
 
-		$referenceId=Str::uuid();
-		$this->setHeaders(Constants::H_REF_ID,$referenceId);
+		$referenceId = Str::uuid();
+		$this->setHeaders(Constants::H_REF_ID, $referenceId);
 		$this->setAuth();
-		if (false!==$callbackUri) {
-			$this->setHeaders(Constants::H_CALL_BACK,$callbackUri);
+		if (false !== $callbackUri) {
+			$this->setHeaders(Constants::H_CALL_BACK, $callbackUri);
 		}
-		if ($this->environ==='sandbox') {
+		if ($this->environ === 'sandbox') {
 			$requestBody->setCurrency('EUR');
 		}
-		
-		$response= $this->send($this->genRequest("POST",$this->transfer_uri,$requestBody->generateRequestBody()));
 
-		$result=new RequestToPayResponse($response,$referenceId,$requestBody);
+		$response = $this->send($this->genRequest("POST", $this->transfer_uri, $requestBody->generateRequestBody()));
+
+		$result = new RequestToPayResponse($response, $referenceId, $requestBody);
 
 		if ($result->isAccepted()) {
-				
-
-			return $this->db->saveRequestToPay($result,$this->apiPrimaryKey,$this->apiSecondary);
+			return $this->db->saveRequestToPay($result, $morph, $this->apiPrimaryKey, $this->apiSecondary);
 		}
 		return false;
 	}
-	public function requestToPayStatus($referenceId){
+	public function requestToPayStatus(Model $payt)
+	{
+		if ($payt->status === "PENDING") {
+			$this->setAuth();
+			$response = $this->send($this->genRequest("GET", $this->transfer_uri . '/' . $payt->referenceId));
 
-		if($payt=$this->db->getPayment($referenceId,$this->apiPrimaryKey,$this->apiSecondary)){
-			
-			if ($payt->status==="PENDING") {
-				$this->setAuth();
-				$response= $this->send($this->genRequest("GET",$this->transfer_uri.'/'.$referenceId));				
-
-				$result=new RequestStatus($response,$referenceId);
-				$this->db->updateRequestToPay($result,$payt);
-			}	
-			return $payt;		
+			$result = new RequestStatus($response, $payt->referenceId);
+			$this->db->updateRequestToPay($result, $payt);
 		}
-		return false;
 	}
-	
+
 	/*public function requestPreAproval(RequestToPay $requestBody,$callbackUri=false){
 		$referenceId=$this->gen_uuid();
 		$this->setHeaders(Constants::H_REF_ID,$referenceId);
@@ -84,5 +82,4 @@ trait PerformsTransfers{
 		}
 		return false;
 	}*/
-
 }

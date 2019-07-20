@@ -16,7 +16,7 @@ class CreateMomoDisbursementsTable extends Migration
     public function up()
     {
         Schema::create(MomoTables::API_DISBURSEMENTS, function (Blueprint $table) {
-            DbUtils::productsTable($table);
+            DbUtils::productsTable($table, 'disbursable');
         });
     }
 
